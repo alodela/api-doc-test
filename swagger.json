@@ -1,0 +1,643 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Respond API",
+        "description": "API endpoints for lead routing and auto-response backend (formerly FiveStreet)",
+        "termsOfService": "http://marketing.move.com/terms-of-service/"
+    },
+    "tags": [
+        {
+            "name": "Agent",
+            "description": "Agents Operations"
+        },
+        {
+            "name": "Office hours",
+            "description": "Lead Forwarding Office Hours Operations"
+        }
+    ],
+    "host": "staging.fivestreet.com",
+    "basePath": "/respond/v1",
+    "schemes": ["https"],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/agents": {
+            "post": {
+                "summary": "Creates a new agent",
+                "description": "Creates a new Respond Agent in FiveStreet",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "agent",
+                        "in": "body",
+                        "description": "Agent data to update",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AgentInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Agent response",
+                        "schema": {
+                            "$ref": "#/definitions/Agent"
+                        },
+                        "examples": {
+                            "agent": {
+                                "id": 123,
+                                "name": "Fred Homer",
+                                "phone": "+1222333444",
+                                "email": "fred.homer@homer.com",
+                                "leadparser_uid": "u4e71b460e6"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "422": {
+                        "description": "The Agent could not be created"
+                    }
+                }
+            }
+        },
+        "/agents/{id}": {
+            "get": {
+                "summary": "Returns a single agent information",
+                "description": "Retrieve agent information for the FiveStreet Id passed.",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent response",
+                        "schema": {
+                            "$ref": "#/definitions/Agent"
+                        },
+                        "examples": {
+                            "agent": {
+                                "id": 123,
+                                "name": "Fred Homer",
+                                "phone": "+1222333444",
+                                "email": "fred.homer@homer.com",
+                                "leadparser_uid": "u4e71b460e6"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update single agent information",
+                "description": "Update agent information for specific FiveStreet Id",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "agent",
+                        "in": "body",
+                        "description": "Agent data to update",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AgentInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent response",
+                        "schema": {
+                            "$ref": "#/definitions/Agent"
+                        },
+                        "examples": {
+                            "agent": {
+                                "id": 123,
+                                "name": "Fred Homer",
+                                "phone": "+1222333444",
+                                "email": "fred.homer@homer.com",
+                                "leadparser_uid": "u4e71b460e6"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    },
+                    "422": {
+                        "description": "The Agent with ID={id} could not be updated."
+                    }
+                }
+            }
+        },
+        "/agents/{id}/subagent": {
+            "post": {
+                "summary": "Creates a new Subagent",
+                "description": "Creates a new Respond Agent under an existing Agent",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "agent",
+                        "in": "body",
+                        "description": "Agent data to update",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AgentInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Agent response",
+                        "schema": {
+                            "$ref": "#/definitions/Agent"
+                        },
+                        "examples": {
+                            "agent": {
+                                "id": 123,
+                                "name": "Fred Homer",
+                                "phone": "+1222333444",
+                                "email": "fred.homer@homer.com",
+                                "leadparser_uid": "u4e71b460e6"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    },
+                    "422": {
+                        "description": "The Agent could not be created"
+                    }
+                }
+            }
+        },
+        "/agents/{id}/enable": {
+            "patch": {
+                "summary": "Enable a single agent",
+                "description": "Enable a specific agent account",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agents has been enabled."
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    },
+                    "422": {
+                        "description": "The Agent with ID={id} could not be updated."
+                    }
+                }
+            }
+        },
+        "/agents/{id}/disable": {
+            "patch": {
+                "summary": "Disable a single agent",
+                "description": "Disable a specific agent account",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent has been disabled."
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    },
+                    "422": {
+                        "description": "The Agent with ID={id} could not be updated."
+                    }
+                }
+            }
+        },
+        "/agents/{id}/bulk_disable": {
+            "patch": {
+                "summary": "Disable multiple agents",
+                "description": "Disable multiple agent accounts under the same brokerage",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "agent_ids[]",
+                        "in": "query",
+                        "description": "Agent Ids",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agents have been disabled."
+                    },
+                    "403": {
+                        "description": "Not Authorized."
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    },
+                    "422": {
+                        "description": "Some agents were not disabled"
+                    }
+                }
+            }
+        },
+        "/agents/{id}/office_hours": {
+            "get": {
+                "summary": "Returns time period for Lead forwarding",
+                "description": "Returns time period when team members will be expected to claim leads within their usual claiming time period",
+                "tags": [
+                    "Office hours"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Office hours response",
+                        "schema": {
+                            "$ref": "#/definitions/OfficeHours"
+                        },
+                        "examples": {
+                            "enabled": true,
+                            "start_hour": 7,
+                            "end_hour": 16,
+                            "agent_id": 23344
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Updates time period for Lead forwarding",
+                "description": "Updates time period when team members will be expected to claim leads within their usual claiming time period",
+                "tags": [
+                    "Office hours"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Agent FiveStreet Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Request timestamp",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "signature",
+                        "in": "query",
+                        "description": "Signature generated from secret key, agent id and timestamp",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "enabled",
+                        "in": "query",
+                        "description": "Enable/Disable Lead Forwarding Office Hours feature",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "start_hour",
+                        "in": "query",
+                        "description": "Expected time to start claiming leads (24-hour format)",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "end_hour",
+                        "in": "query",
+                        "description": "Expected time to stop claiming leads (24-hour format)",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Office hours response",
+                        "schema": {
+                            "$ref": "#/definitions/OfficeHours"
+                        },
+                        "examples": {
+                            "enabled": 1,
+                            "start_hour": 7,
+                            "end_hour": 16
+                        }
+                    },
+                    "403": {
+                        "description": "Not Authorized"
+                    },
+                    "404": {
+                        "description": "The agent was not found."
+                    },
+                    "406": {
+                        "description": "Agent inactive or not a Respond agent"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Agent": {
+            "required": [
+                "id",
+                "name",
+                "phone",
+                "email",
+                "leadparser_uid"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "leadparser_uid": {
+                    "type": "string",
+                    "format": "guid"
+                }
+            }
+        },
+        "AgentInput": {
+            "required": [
+                "name",
+                "phone",
+                "email"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "time_zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "OfficeHours": {
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "start_hour": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "end_hour": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "agent_id": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        }
+    }
+}
